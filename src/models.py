@@ -7,6 +7,7 @@ class Usuario(db.Model):
     name = db.Column(db.String(250), unique=True,nullable=False)
     surname = db.Column(db.String(250), unique=False, nullable=False)
     email = db.Column(db.String(250), unique=False, nullable=False)
+    password = db.Column(db.String(250), unique=False, nullable=False)
     favoritos = db.relationship('Favoritos', backref='usuario', lazy=True)
 
     def __repr__(self):

@@ -31,23 +31,35 @@ app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
 jwt = JWTManager(app)
 
 
-@app.route("/signup", methods=["POST"]) # Se recibe una solicitud POST en la ruta "/signup"
-def signup():
-    body= json.loads(request.data)   # Se convierte la información enviada en la solicitud a un diccionario llamado body usando json.loads y request.data.
+# @app.route("/signup", methods=["POST"]) Se recibe una solicitud POST en la ruta "/signup"
+# def signup():
+    # body= json.loads(request.data)   # Se convierte la información enviada en la solicitud a un diccionario llamado body usando json.loads y request.data.
 
-    usuario_signup = Usuario.query.filter_by(email=body["email"]).first() #Se busca en la base de datos si el email enviado en la solicitud ya está registrado usando Usuario.query.filter_by(email=body["email"]).first().
+    # usuario_signup = Usuario.query.filter_by(email=body["email"]).first() #Se busca en la base de datos si el email enviado en la solicitud ya está registrado usando Usuario.query.filter_by(email=body["email"]).first().
 
-    if usuario_signup is None: #Si no se encuentra ningún usuario con el email enviado, se crea una nueva instancia de la clase Usuario usando los datos enviados en el cuerpo de la solicitud body.
+    # if usuario_signup is None: #Si no se encuentra ningún usuario con el email enviado, se crea una nueva instancia de la clase Usuario usando los datos enviados en el cuerpo de la solicitud body.
 
-        name2 =  Usuario(name=body ["name"], surname=body ["surname"], email=body["email"], password=body["password"]) 
+        # name2 =  Usuario(name=body ["name"], surname=body ["surname"], email=body["email"], password=body["password"]) 
         
         #Se agrega la nueva instancia a la base de datos usando db.session.add(name2) y se guardan los cambios en la base de datos usando db.session.commit().
-        db.session.add(name2)
-        db.session.commit()
-        response_body = {"msg":"el usuario fue creado con exito"}
+        # db.session.add(name2)
+        # db.session.commit()
+        # response_body = {"msg":"el usuario fue creado con exito"}
 
-        return jsonify(response_body), 200 #Se devuelve una respuesta con un mensaje de éxito y un código de estado HTTP 200 (OK).
+        # return jsonify(response_body), 200 #Se devuelve una respuesta con un mensaje de éxito y un código de estado HTTP 200 (OK).
 
+@app.route('/signup', methods=['POST'])
+def signup():  
+    request_body = request.data    
+    decoded_object = json.loads(request_body)   
+    get_email = Usuario.query.filter_by(email=decoded_object["email"]).first()   
+    if get_email is None:        
+        new_user = Usuario(name=decoded_object["name"], surname=decoded_object["surname"], email=decoded_object["email"], password=decoded_object["password"])     
+        db.session.add(new_user)     
+        db.session.commit()      
+        return jsonify({"msg":"Usuario creado correctamente."}), 200   
+    else:        
+        return jsonify({"msg":"El usuario ya existe"}), 400
 
     response_body = {"msg":"el usuario ya existe en el sistema"}
 
